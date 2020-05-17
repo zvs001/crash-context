@@ -1,12 +1,15 @@
 {
   "name": "crash-context",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepack": "npx tsc",
+    "prepack": "npx tsc --noEmit false",
     "postpublish": "npm run clean",
     "clean": "ts-node ./scripts/clean.ts"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,7 @@
     "lodash": "*"
   },
   "devDependencies": {
+    "@types/find-package-json": "^1.1.1",
     "@types/lodash": "^4.14.151",
     "del": "^5.1.0",
     "ts-node": "^8.10.1"

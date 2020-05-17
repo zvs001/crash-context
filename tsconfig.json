@@ -3,8 +3,8 @@
     "transpileOnly": true
   },
   "compilerOptions": {
-    "module": "CommonJS",
     "noEmit": true,
+    "module": "CommonJS",
     "lib": ["dom", "esnext", "es2015", "es2018"],
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
@@ -17,5 +17,8 @@
     "declaration": true,
     "allowJs": true,
     "esModuleInterop": true
-  }
+  },
+  "exclude": [
+    "./scripts"
+  ]
 }
