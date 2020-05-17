@@ -1,0 +1,32 @@
+{
+  "name": "crash-context",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepack": "npx tsc",
+    "postpublish": "npm run clean",
+    "clean": "ts-node ./scripts/clean.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zvs001/crash-context"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zvs001/crash-context/issues"
+  },
+  "homepage": "https://github.com/zvs001/crash-context#readme",
+  "dependencies": {
+    "find-package-json": "^1.2.0",
+    "is-promise": "^4.0.0",
+    "lodash": "*"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.151",
+    "del": "^5.1.0",
+    "ts-node": "^8.10.1"
+  }
+}

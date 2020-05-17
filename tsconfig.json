@@ -1,0 +1,21 @@
+{
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "compilerOptions": {
+    "module": "CommonJS",
+    "noEmit": true,
+    "lib": ["dom", "esnext", "es2015", "es2018"],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "skipDefaultLibCheck": true,
+    "noEmitOnError": false,
+    "declaration": true,
+    "allowJs": true,
+    "esModuleInterop": true
+  }
+}
