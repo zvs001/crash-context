@@ -9,6 +9,14 @@ interface ContextPointOptions {
   showModuleName?: boolean
   moduleName?: string
 }
+
+export interface CrashContextConfig<T extends FuncType> {
+  funcName?: string
+  reduceParams(...params: Parameters<T>): any
+}
+
+type FuncType = (...params: any) => any
+
 class ContextPoint {
   isModuleNameEnabled: boolean
 
@@ -26,16 +34,24 @@ class ContextPoint {
   }
 
 
-  getLogData(fn: Function, params: any[]): string[] {
+  getLogData(fn: FuncType, params: any[], config?: CrashContextConfig<FuncType>): string[] {
     const modulePrefix = this.isModuleNameEnabled && this.moduleName ? `(${this.moduleName})` : ''
 
+    const { funcName, reduceParams } = config || {}
+
+    let resultParams = params
+    if (reduceParams) resultParams = reduceParams(...resultParams)
+    if (!_.isArray(resultParams)) resultParams = [resultParams]
+
+    let functionName = funcName || fn.name
+    if (functionName) functionName += '.'
 
     let logParams: string[] = [
       '[Crash Context]',
       modulePrefix,
-      `${fn.name}.`,
+      functionName,
       'Params:',
-      ...params,
+      ...resultParams,
     ]
 
     logParams = logParams.filter(item => item)
@@ -44,15 +60,15 @@ class ContextPoint {
   }
 
 
-  createCrashContext<T extends Function>(fn: T): T {
+  createCrashContext<T extends FuncType>(fn: T, config?: CrashContextConfig<T>): T {
     // @ts-ignore
     return (...params) => {
       try {
         const res = fn(...params)
-        if (isPromise(res)) return asyncErrorListener(res, this.getLogData(fn, params))
+        if (isPromise(res)) return asyncErrorListener(res, this.getLogData(fn, params, config))
         return res
       } catch (e) {
-        let logParams = this.getLogData(fn, params)
+        let logParams = this.getLogData(fn, params, config)
         console.error(...logParams)
         throw e
       }
