@@ -12,7 +12,8 @@ interface ContextPointOptions {
 
 export interface CrashContextConfig<T extends FuncType> {
   funcName?: string
-  reduceParams(...params: Parameters<T>): any
+  reduceParams?(...params: Parameters<T>): any
+  handleLog?(params: { functionName: string; params: Parameters<T> }): string
 }
 
 type FuncType = (...params: any) => any
@@ -34,29 +35,40 @@ class ContextPoint {
   }
 
 
-  getLogData(fn: FuncType, params: any[], config?: CrashContextConfig<FuncType>): string[] {
+  public getLogData<T extends FuncType>(fn: T, params: Parameters<T>, config?: CrashContextConfig<T>): string[] {
     const modulePrefix = this.isModuleNameEnabled && this.moduleName ? `(${this.moduleName})` : ''
 
-    const { funcName, reduceParams } = config || {}
+    const { funcName, reduceParams, handleLog } = config || {}
 
-    let resultParams = params
-    if (reduceParams) resultParams = reduceParams(...resultParams)
+    let resultParams: any[] = params
+    if (reduceParams) resultParams = reduceParams(...resultParams as Parameters<T>)
     if (!_.isArray(resultParams)) resultParams = [resultParams]
 
     let functionName = funcName || fn.name
     if (functionName) functionName += '.'
 
+    const handleLogParams = { functionName, params }
+    const log = _.isFunction(handleLog) ? handleLog(handleLogParams) : this.getLogParams(handleLogParams)
+
     let logParams: string[] = [
       '[Crash Context]',
       modulePrefix,
-      functionName,
-      'Params:',
-      ...resultParams,
+      log,
     ]
 
     logParams = logParams.filter(item => item)
 
     return logParams
+  }
+
+  private getLogParams({ functionName, params }: { functionName: string; params: any[]}): string {
+    let logParams: string[] = [
+      functionName || '-',
+      'Params:',
+      ...params,
+    ]
+
+    return logParams.join(' ')
   }
 
 
@@ -65,7 +77,7 @@ class ContextPoint {
     return (...params) => {
       try {
         const res = fn(...params)
-        if (isPromise(res)) return asyncErrorListener(res, this.getLogData(fn, params, config))
+        if (isPromise(res)) return asyncErrorListener(res, this.getLogData<T>(fn, params, config))
         return res
       } catch (e) {
         let logParams = this.getLogData(fn, params, config)
